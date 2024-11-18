@@ -5,10 +5,10 @@ interface Props extends PropsWithChildren {
     className?: string;
 }
 
-export function AppContainer({ children, className }: Props) {
+export function Box({ children, className }: Props) {
     return (
-        <div className={cn("mx-auto max-w-screen-sm px-4 py-10", className)}>
+        <section className={cn("relative rounded-[14px] p-[14px]", className)}>
             {children}
-        </div>
+        </section>
     );
 }

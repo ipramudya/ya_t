@@ -1,4 +1,3 @@
-import { AppContainer } from "@/components";
 import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 import { type PropsWithChildren } from "react";
@@ -18,9 +17,7 @@ const inter = Inter({
 export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang="en">
-            <body className={inter.className}>
-                <AppContainer>{children}</AppContainer>
-            </body>
+            <body className={inter.className}>{children}</body>
         </html>
     );
 }
