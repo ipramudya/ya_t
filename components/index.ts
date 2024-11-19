@@ -4,3 +4,6 @@ export * from "./Box";
 export * from "./EditButton";
 export * from "./Header";
 export * from "./Icons";
+export * from "./InputField";
+export * from "./LoginForm";
+export * from "./RegisterForm";

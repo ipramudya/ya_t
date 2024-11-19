@@ -1,5 +1,6 @@
 import { cn } from "@/lib";
 import { type PropsWithChildren } from "react";
+import { BackgrounGradient } from "./BackgrounGradient";
 
 type ClassNames = {
     Main?: string;
@@ -17,23 +18,25 @@ export function AppContainer({
     inputPage = false
 }: Props) {
     return (
-        <main
-            className={cn(
-                "min-h-dvh text-white",
-                inputPage
-                    ? "from-gradient-from via-gradient-mid to-gradient-to bg-gradient-to-l"
-                    : "bg-brand-900",
-                classNames?.Main
-            )}
-        >
-            <div
+        <>
+            {inputPage && <BackgrounGradient />}
+            <main
                 className={cn(
-                    "mx-auto max-w-screen-sm px-2 py-10",
-                    classNames?.Container
+                    "z-[1] min-h-dvh text-white",
+                    inputPage ? "bg-transparent" : "bg-brand-900",
+                    classNames?.Main
                 )}
             >
-                {children}
-            </div>
-        </main>
+                <div
+                    className={cn(
+                        "mx-auto max-w-screen-sm py-10",
+                        inputPage ? "px-4" : "px-2",
+                        classNames?.Container
+                    )}
+                >
+                    {children}
+                </div>
+            </main>
+        </>
     );
 }
