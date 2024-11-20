@@ -38,10 +38,14 @@ type InputVariants = VariantProps<typeof inputVariants>;
 interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
     color?: InputVariants["color"];
     dimmension?: InputVariants["dimmension"];
+    readOnly?: boolean;
 }
 
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-    ({ className, color, dimmension, type = "text", ...props }, ref) => {
+    (
+        { className, color, dimmension, readOnly, type = "text", ...props },
+        ref
+    ) => {
         const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
         const togglePasswordVisibility = () => {
@@ -51,6 +55,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         const inputProps = {
             ref,
             className: cn(inputVariants({ color, dimmension }), className),
+            disabled: readOnly,
             ...props
         };
 
@@ -68,6 +73,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute right-4 top-1/2 size-fit -translate-y-1/2"
+                    disabled={readOnly}
                     aria-label={
                         isPasswordVisible ? "Hide password" : "Show password"
                     }
