@@ -6,4 +6,8 @@
     .golden-text {
         @apply bg-gradient-to-t from-orange-100 to-orange-300 bg-clip-text text-transparent;
     }
+
+    .blue-gradient-text {
+        @apply bg-gradient-to-t from-[rgba(170,218,255,1)] to-[rgba(171,255,253,1)] bg-clip-text text-transparent;
+    }
 }

@@ -1,4 +1,11 @@
-import { AppContainer, Box, EditButton, Header, Icons } from "@/components";
+import {
+    AppContainer,
+    Box,
+    EditButton,
+    Header,
+    Icons,
+    InterestSection
+} from "@/components";
 import { EditProfileSection } from "@/components/EditProfileSection";
 
 export default function Home() {
@@ -14,15 +21,7 @@ export default function Home() {
                 <EditButton className="absolute right-3 top-3" />
             </Box>
             <EditProfileSection />
-            <Box className="flex min-h-[120px] flex-col justify-center gap-8 bg-brand-800">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Interest</h3>
-                    <EditButton />
-                </div>
-                <p className="text-sm text-subtitle">
-                    Add in your interest to find a better match
-                </p>
-            </Box>
+            <InterestSection />
         </AppContainer>
     );
 }

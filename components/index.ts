@@ -5,6 +5,7 @@ export * from "./EditButton";
 export * from "./Header";
 export * from "./Icons";
 export * from "./InputField";
+export * from "./InterestSection";
 export * from "./JotaiProvider";
 export * from "./LoginForm";
 export * from "./RegisterForm";
