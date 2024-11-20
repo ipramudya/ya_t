@@ -1,18 +1,18 @@
 "use client";
 
 import { cn } from "@/lib";
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, type ComponentPropsWithoutRef } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Icons } from "./Icons";
 
-const variants = tv({
+const inputVariants = tv({
     base: [
         "flex w-full items-center rounded-lg border px-5 text-sm text-white",
-        "focus-visible:outline-input-border focus-visible:outline-dashed focus-visible:outline-1 focus-visible:outline-offset-2"
+        "focus-visible:outline-dashed focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-input-border"
     ],
     variants: {
         color: {
-            primary: "bg-white-input border-transparent",
+            primary: "border-transparent bg-white-input",
             outlined: "border-input-border bg-darken-input"
         },
         dimmension: {
@@ -23,45 +23,59 @@ const variants = tv({
     defaultVariants: {
         color: "primary",
         dimmension: "base"
-    }
+    },
+    compoundVariants: [
+        {
+            color: "outlined",
+            dimmension: "sm",
+            className: "text-end placeholder:text-[rgba(255,255,255,0.3)]"
+        }
+    ]
 });
 
-type ColorProps = VariantProps<typeof variants>["color"];
-type DimensionsProps = VariantProps<typeof variants>["dimmension"];
+type InputVariants = VariantProps<typeof inputVariants>;
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
-    color?: ColorProps;
-    dimmension?: DimensionsProps;
+interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
+    color?: InputVariants["color"];
+    dimmension?: InputVariants["dimmension"];
 }
 
-export const InputField = forwardRef<HTMLInputElement, Props>(
+export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     ({ className, color, dimmension, type = "text", ...props }, ref) => {
-        const [passwordShown, setPasswordShown] = useState(false);
+        const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-        return type === "password" ? (
+        const togglePasswordVisibility = () => {
+            setIsPasswordVisible((prev) => !prev);
+        };
+
+        const inputProps = {
+            ref,
+            className: cn(inputVariants({ color, dimmension }), className),
+            ...props
+        };
+
+        if (type !== "password") {
+            return <input type={type} {...inputProps} />;
+        }
+
+        return (
             <div className="relative w-full">
                 <input
-                    ref={ref}
-                    className={cn(variants({ color, dimmension }), className)}
-                    type={passwordShown ? "text" : "password"}
-                    {...props}
+                    type={isPasswordVisible ? "text" : "password"}
+                    {...inputProps}
                 />
                 <button
-                    onClick={() => setPasswordShown((state) => !state)}
-                    className="absolute right-4 top-1/2 size-fit -translate-y-1/2"
                     type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-4 top-1/2 size-fit -translate-y-1/2"
+                    aria-label={
+                        isPasswordVisible ? "Hide password" : "Show password"
+                    }
                 >
                     <Icons.Eye />
                 </button>
             </div>
-        ) : (
-            <input
-                ref={ref}
-                className={cn(variants({ color, dimmension }), className)}
-                {...props}
-            />
         );
     }
 );
-
 InputField.displayName = "InputField";

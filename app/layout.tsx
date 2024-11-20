@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 import { type PropsWithChildren } from "react";
 
+import { JotaiProvider } from "@/components";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ const inter = Inter({
 export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang="en">
-            <body className={inter.className}>{children}</body>
+            <body className={inter.className}>
+                <JotaiProvider>{children}</JotaiProvider>
+            </body>
         </html>
     );
 }

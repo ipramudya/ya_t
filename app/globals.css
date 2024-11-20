@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .golden-text {
+        @apply bg-gradient-to-t from-orange-100 to-orange-300 bg-clip-text text-transparent;
+    }
+}
