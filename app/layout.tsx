@@ -4,6 +4,7 @@ import { type PropsWithChildren } from "react";
 
 import { JotaiProvider } from "@/components";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang="en">
             <body className={inter.className}>
+                <Toaster richColors />
                 <JotaiProvider>{children}</JotaiProvider>
             </body>
         </html>

@@ -10,3 +10,4 @@ export * from "./JotaiProvider";
 export * from "./LoginForm";
 export * from "./RegisterForm";
 export * from "./SelectField";
+export * from "./MainButton";

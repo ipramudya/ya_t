@@ -8,7 +8,7 @@ import { Icons } from "./Icons";
 const inputVariants = tv({
     base: [
         "flex w-full items-center rounded-lg border px-5 text-sm text-white",
-        "focus-visible:outline-dashed focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-input-border"
+        "focus-visible:outline-dashed focus-visible:outline-1 focus-visible:outline-offset-2"
     ],
     variants: {
         color: {
@@ -18,11 +18,16 @@ const inputVariants = tv({
         dimmension: {
             sm: "h-9",
             base: "h-[51px]"
+        },
+        error: {
+            true: "focus-visible:outline-red-500",
+            false: "focus-visible:outline-input-border"
         }
     },
     defaultVariants: {
         color: "primary",
-        dimmension: "base"
+        dimmension: "base",
+        error: false
     },
     compoundVariants: [
         {
@@ -39,11 +44,20 @@ interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
     color?: InputVariants["color"];
     dimmension?: InputVariants["dimmension"];
     readOnly?: boolean;
+    error?: boolean;
 }
 
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     (
-        { className, color, dimmension, readOnly, type = "text", ...props },
+        {
+            className,
+            color,
+            dimmension,
+            readOnly,
+            error,
+            type = "text",
+            ...props
+        },
         ref
     ) => {
         const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -54,7 +68,10 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         const inputProps = {
             ref,
-            className: cn(inputVariants({ color, dimmension }), className),
+            className: cn(
+                inputVariants({ color, dimmension, error }),
+                className
+            ),
             disabled: readOnly,
             ...props
         };
