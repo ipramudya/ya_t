@@ -10,6 +10,8 @@ export default function Page() {
     function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key === "Enter" && inputValue.trim()) {
             e.preventDefault();
+
+            // Prevent duplicate entries
             if (!interests.includes(inputValue.trim())) {
                 setInterests([...interests, inputValue.trim()]);
             }
