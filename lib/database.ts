@@ -86,3 +86,25 @@ export async function deleteUser(userId: string): Promise<boolean> {
         throw error;
     }
 }
+
+export async function getUserByEmailOrUsername(
+    emailOrUsername: string
+): Promise<UserDatabaseResponse | null> {
+    try {
+        const users = await database.listDocuments(
+            DATABASE_ID,
+            USERS_COLLECTION_ID,
+            [
+                Query.or([
+                    Query.equal("email", emailOrUsername),
+                    Query.equal("username", emailOrUsername)
+                ])
+            ]
+        );
+
+        return users.documents[0] as unknown as UserDatabaseResponse;
+    } catch (error) {
+        console.log("error getting user by email or username:", error);
+        return null;
+    }
+}

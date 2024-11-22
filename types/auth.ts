@@ -10,9 +10,23 @@ export type RegisterPayloadRequest = {
     password: string;
 };
 
+export type LoginPayloadRequest = {
+    emailOrUsername: string;
+    password: string;
+};
+
+export type LoginServerResponse = ServerResponse & {
+    token?: string;
+};
+
 export interface RegisterFormInputs {
     email: string;
     username: string;
     password: string;
     confirmPassword: string;
+}
+
+export interface LoginFormInputs {
+    emailOrUsername: string;
+    password: string;
 }

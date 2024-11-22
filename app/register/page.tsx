@@ -11,7 +11,7 @@ export default function Page() {
             </div>
             <p className="mt-14 text-center text-sm text-golden">
                 Have an account?{" "}
-                <Link href="register" className="golden-text">
+                <Link href="login" className="golden-text">
                     Login here
                 </Link>
             </p>
