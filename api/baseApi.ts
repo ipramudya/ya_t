@@ -1,5 +1,3 @@
-import { tokenManager } from "@/lib/tokenManager";
-
 export type ApiConfig = {
     accessToken?: string;
     baseURL: string;
@@ -17,20 +15,20 @@ export class BaseApi {
         endpoint: string,
         options?: RequestInit
     ): Promise<T> {
-        const headers: HeadersInit = {
-            "Content-Type": "application/json"
-        };
+        const headers: HeadersInit = {};
 
-        if (this.config.useAuth) {
-            const token = (await tokenManager()).getToken();
-            if (token) {
-                headers["x-access-token"] = token;
-            }
+        // Check if the body is FormData
+        if (!(options?.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
         }
 
         const response = await fetch(`${this.config.baseURL}${endpoint}`, {
             ...options,
-            headers
+            headers: {
+                ...headers,
+                ...options?.headers
+            },
+            credentials: this.config.useAuth ? "include" : "same-origin"
         });
 
         const data = await response.json();

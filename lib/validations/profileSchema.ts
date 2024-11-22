@@ -2,7 +2,7 @@ import { ProfileFormInputs } from "@/types/profile";
 import { z } from "zod";
 
 export const profileSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+    displayName: z.string().min(1, "Name is required"),
     gender: z.enum(["male", "female"], {
         required_error: "Gender is required"
     }),
@@ -21,7 +21,7 @@ export const profileSchema = z.object({
 
 export const getFieldConfig = (fieldName: keyof ProfileFormInputs) => {
     const configs = {
-        name: {
+        displayName: {
             label: "Display name:",
             type: "text",
             placeholder: "Enter name"

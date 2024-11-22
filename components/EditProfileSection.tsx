@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { Box } from "./Box";
@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
 import { ProfileFormInputs } from "@/types/profile";
 import { cn } from "@/lib";
-import { useAuth } from "@/hooks/useAuth";
+import { api } from "@/api";
 
 const MOCK_PROFILE_DATA = {
     birthday: "28 / 08 / 1995",
@@ -28,6 +28,7 @@ const MOCK_PROFILE_DATA = {
 };
 
 const isEditedAtom = atom(false);
+const isSubmittingAtom = atom(false);
 
 export function EditProfileSection() {
     const [isEdited, setIsEdited] = useAtom(isEditedAtom);
@@ -78,7 +79,7 @@ function ProfileForm({ children }: PropsWithChildren) {
     const form = useForm<ProfileFormInputs>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            name: "",
+            displayName: "",
             gender: "male",
             birthday: "",
             horoscope: "",
@@ -96,15 +97,21 @@ function ProfileForm({ children }: PropsWithChildren) {
         formState: { errors }
     } = form;
 
+    const setIsSubmitting = useSetAtom(isSubmittingAtom);
     const setIsEdited = useSetAtom(isEditedAtom);
 
     const onSubmit = handleSubmit(async (data) => {
+        setIsSubmitting(true);
         try {
             const formData = new FormData();
 
             // Add all form fields
             Object.entries(data).forEach(([key, value]) => {
-                if (value !== undefined && value !== null) {
+                if (
+                    value !== undefined &&
+                    value !== null &&
+                    !["horoscope", "zodiac"].includes(key)
+                ) {
                     formData.append(key, value as string);
                 }
             });
@@ -114,13 +121,15 @@ function ProfileForm({ children }: PropsWithChildren) {
                 formData.append("profileImage", selectedFile);
             }
 
-            console.log(
-                "FormData entries:",
-                Object.fromEntries(formData.entries())
-            );
+            const response = await api.profileService.upsertProfile(formData);
+            console.log({ response });
+            toast.success(response.message);
+
             setIsEdited(false);
         } catch (error) {
             console.error("Error submitting form:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     });
 
@@ -176,7 +185,6 @@ function ImageUploadButton({
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.files);
         const file = event.target.files?.[0];
         if (file) {
             onFileSelect(file);
@@ -281,8 +289,9 @@ function FormField({
 }
 
 function SaveAndUpdateButton() {
+    const isSubmitting = useAtomValue(isSubmittingAtom);
     const {
-        formState: { isSubmitting, isValid }
+        formState: { isValid }
     } = useFormContext<ProfileFormInputs>();
 
     return (
@@ -294,8 +303,8 @@ function SaveAndUpdateButton() {
             <span
                 className={cn(
                     "golden-text text-sm",
-                    isSubmitting ||
-                        (!isValid && "cursor-not-allowed opacity-50")
+                    (isSubmitting || !isValid) &&
+                        "cursor-not-allowed opacity-50"
                 )}
             >
                 Save & Update
