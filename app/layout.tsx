@@ -20,7 +20,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang="en">
             <body className={inter.className}>
-                <Toaster richColors />
+                <Toaster richColors position="top-right" />
                 <JotaiProvider>{children}</JotaiProvider>
             </body>
         </html>

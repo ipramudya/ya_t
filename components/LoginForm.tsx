@@ -32,7 +32,7 @@ export function LoginForm() {
                 emailOrUsername: data.emailOrUsername,
                 password: data.password
             });
-            router.push("/dashboard");
+            router.push("/");
             toast.success(response.message);
         } catch (error) {
             toast.error((error as Error).message);
