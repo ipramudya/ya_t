@@ -2,87 +2,20 @@
 "use client";
 
 import { atom, useAtom, useSetAtom } from "jotai";
-import { PropsWithChildren } from "react";
-import { useForm } from "react-hook-form";
+import { PropsWithChildren, useEffect, useState } from "react";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { Box } from "./Box";
 import { ConditionalWrapper } from "./ConditionalWrapper";
 import { EditButton } from "./EditButton";
 import { Icons } from "./Icons";
 import { InputField } from "./InputField";
 import { SelectField } from "./SelectField";
-
-interface ProfileFormData {
-    name: string;
-    gender: "male" | "female";
-    birthday: string;
-    horoscope: string;
-    zodiac: string;
-    height: string;
-    weight: string;
-}
-
-const PROFILE_FIELDS = [
-    {
-        id: "name",
-        label: "Display name:",
-        type: "text",
-        placeholder: "Enter name",
-        validation: { required: "Name is required" }
-    },
-    {
-        id: "gender",
-        label: "Gender:",
-        type: "select",
-        options: ["Male", "Female"],
-        validation: { required: "Gender is required" }
-    },
-    {
-        id: "birthday",
-        label: "Birthday:",
-        type: "date",
-        validation: { required: "Birthday is required" }
-    },
-    {
-        id: "horoscope",
-        label: "Horoscope:",
-        type: "text",
-        placeholder: "--",
-        readOnly: true
-    },
-    {
-        id: "zodiac",
-        label: "Zodiac:",
-        type: "text",
-        placeholder: "--",
-        readOnly: true
-    },
-    {
-        id: "height",
-        label: "Height:",
-        type: "text",
-        placeholder: "Add height",
-        validation: {
-            required: "Height is required",
-            pattern: {
-                value: /^\d+$/,
-                message: "Please enter a valid number"
-            }
-        }
-    },
-    {
-        id: "weight",
-        label: "Weight:",
-        type: "text",
-        placeholder: "Add weight",
-        validation: {
-            required: "Weight is required",
-            pattern: {
-                value: /^\d+$/,
-                message: "Please enter a valid number"
-            }
-        }
-    }
-];
+import { calculateZodiac } from "@/lib/zodiac";
+import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
+import { ProfileFormInputs } from "@/types/profile";
+import { cn } from "@/lib";
 
 const MOCK_PROFILE_DATA = {
     birthday: "28 / 08 / 1995",
@@ -139,11 +72,10 @@ function ProfileSection() {
 }
 
 function ProfileForm({ children }: PropsWithChildren) {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<ProfileFormData>({
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const form = useForm<ProfileFormInputs>({
+        resolver: zodResolver(profileSchema),
         defaultValues: {
             name: "",
             gender: "male",
@@ -151,52 +83,141 @@ function ProfileForm({ children }: PropsWithChildren) {
             horoscope: "",
             zodiac: "",
             height: "",
-            weight: ""
+            weight: "",
+            profileImage: undefined
         }
     });
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors }
+    } = form;
 
     const setIsEdited = useSetAtom(isEditedAtom);
 
     const onSubmit = handleSubmit(async (data) => {
         try {
-            // TODO: Handle form submission
-            console.log(data);
+            const formData = new FormData();
+
+            // Add all form fields
+            Object.entries(data).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    formData.append(key, value as string);
+                }
+            });
+
+            // Add file separately if it exists
+            if (selectedFile) {
+                formData.append("profileImage", selectedFile);
+            }
+
+            console.log(
+                "FormData entries:",
+                Object.fromEntries(formData.entries())
+            );
             setIsEdited(false);
         } catch (error) {
             console.error("Error submitting form:", error);
         }
     });
 
+    const birthday = watch("birthday");
+
+    useEffect(() => {
+        if (birthday) {
+            try {
+                const { horoscope, zodiac } = calculateZodiac(birthday);
+                setValue("horoscope", horoscope);
+                setValue("zodiac", zodiac);
+            } catch (error) {
+                toast.error(
+                    `"error calculating zodiac, ${(error as Error).message}"`
+                );
+            }
+        }
+    }, [birthday, setValue]);
+
     return (
-        <form onSubmit={onSubmit}>
-            {children}
-            <div className="mt-8 flex flex-col">
-                <ImageUploadButton />
-                <div className="mt-8 flex flex-col gap-3">
-                    {PROFILE_FIELDS.map((field) => (
-                        <FormField
-                            key={field.id}
-                            {...field}
-                            register={register}
-                            error={errors[field.id as keyof ProfileFormData]}
-                        />
-                    ))}
+        <FormProvider {...form}>
+            <form onSubmit={onSubmit}>
+                {children}
+                <div className="mt-8 flex flex-col">
+                    <ImageUploadButton onFileSelect={setSelectedFile} />
+                    <div className="mt-8 flex flex-col gap-3">
+                        {Object.keys(profileSchema.shape).map((fieldName) => (
+                            <FormField
+                                key={fieldName}
+                                id={fieldName}
+                                {...getFieldConfig(
+                                    fieldName as keyof ProfileFormInputs
+                                )}
+                                register={register}
+                                error={
+                                    errors[fieldName as keyof ProfileFormInputs]
+                                }
+                            />
+                        ))}
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </FormProvider>
     );
 }
 
-function ImageUploadButton() {
+function ImageUploadButton({
+    onFileSelect
+}: {
+    onFileSelect: (file: File | null) => void;
+}) {
+    const { watch } = useFormContext<ProfileFormInputs>();
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.files);
+        const file = event.target.files?.[0];
+        if (file) {
+            onFileSelect(file);
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const selectedImage = watch("profileImage");
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
     return (
         <div className="flex items-center gap-4">
-            <button
-                type="button"
-                className="flex size-[57px] items-center justify-center rounded-[17px] bg-[rgba(255,255,255,0.08)]"
-            >
-                <Icons.Add width={24} height={24} />
-            </button>
-            <span className="text-sm">Add image</span>
+            <div className="flex size-[57px] items-center justify-center rounded-[17px] bg-[rgba(255,255,255,0.08)]">
+                {previewUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="h-full w-full rounded-[17px] object-cover"
+                    />
+                ) : (
+                    <Icons.Add width={24} height={24} />
+                )}
+            </div>
+            <label htmlFor="profileImage" className="cursor-pointer text-sm">
+                {selectedImage ? "Change image" : "Add image"}
+            </label>
+            <input
+                type="file"
+                id="profileImage"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageSelect}
+            />
         </div>
     );
 }
@@ -259,9 +280,25 @@ function FormField({
 }
 
 function SaveAndUpdateButton() {
+    const {
+        formState: { isSubmitting, isValid }
+    } = useFormContext<ProfileFormInputs>();
+
     return (
-        <button className="size-fit" type="submit">
-            <span className="golden-text text-sm">Save & Update</span>
+        <button
+            className="size-fit"
+            type="submit"
+            disabled={isSubmitting || !isValid}
+        >
+            <span
+                className={cn(
+                    "golden-text text-sm",
+                    isSubmitting ||
+                        (!isValid && "cursor-not-allowed opacity-50")
+                )}
+            >
+                Save & Update
+            </span>
         </button>
     );
 }
