@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
 import { ProfileFormInputs } from "@/types/profile";
 import { cn } from "@/lib";
+import { useAuth } from "@/hooks/useAuth";
 
 const MOCK_PROFILE_DATA = {
     birthday: "28 / 08 / 1995",

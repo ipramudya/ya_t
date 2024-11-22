@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/components";
 import { verifyToken } from "@/lib/jwt";
 import { tokenManager } from "@/lib/tokenManager";
 import { redirect } from "next/navigation";
@@ -18,5 +19,5 @@ export default async function Layout({ children }: PropsWithChildren) {
         redirect("/login");
     }
 
-    return <>{children}</>;
+    return <AuthProvider user={payload}>{children}</AuthProvider>;
 }
