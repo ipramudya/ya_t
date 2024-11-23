@@ -3,10 +3,10 @@
 "use client";
 
 import { useUser } from "@/hooks/useUser";
-import { calculateAge } from "@/lib";
-import { calculateZodiac } from "@/lib/zodiac";
+import { calculateAge, calculateZodiac } from "@/lib";
 import { useMemo } from "react";
 import { Box } from "./Box";
+import { ZodiacHoroscopeIcons } from "./ZodiacHoroscopeIcons";
 
 export function BannerProfile() {
     const { user } = useUser();
@@ -42,12 +42,19 @@ function ZodiacAndHoroscope({ birthday }: { birthday: Date }) {
         return calculateZodiac(birthday.toISOString());
     }, [birthday]);
 
+    // @ts-expect-error - Type 'string' is not assignable to type 'keyof typeof ZodiacHoroscopeIcons'.
+    const zodiacIcon = ZodiacHoroscopeIcons[zodiac];
+    // @ts-expect-error - Type 'string' is not assignable to type 'keyof typeof ZodiacHoroscopeIcons'.
+    const horoscopeIcon = ZodiacHoroscopeIcons[horoscope];
+
     return (
         <div className="flex items-center gap-2">
             <div className="flex items-center justify-center rounded-full bg-[#121615] px-4 py-2">
+                <span className="mr-2 text-white">{horoscopeIcon}</span>
                 <p className="text-sm font-semibold capitalize text-white">{horoscope}</p>
             </div>
             <div className="flex items-center justify-center rounded-full bg-[#121615] px-4 py-2">
+                <span className="mr-2 text-white">{zodiacIcon}</span>
                 <p className="text-sm font-semibold capitalize text-white">{zodiac}</p>
             </div>
         </div>

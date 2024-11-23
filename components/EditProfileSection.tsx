@@ -5,9 +5,8 @@
 
 import { api } from "@/api";
 import { useUser } from "@/hooks/useUser";
-import { calculateAge, formatDate } from "@/lib";
-import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
-import { calculateZodiac } from "@/lib/zodiac";
+import { calculateAge, calculateZodiac, formatDate } from "@/lib";
+import { getFieldConfig, profileSchema } from "@/lib/validations";
 import { ProfileFormInputs } from "@/types/profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";

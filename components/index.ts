@@ -15,3 +15,4 @@ export * from "./LoginForm";
 export * from "./MainButton";
 export * from "./RegisterForm";
 export * from "./SelectField";
+export * from "./ZodiacHoroscopeIcons";

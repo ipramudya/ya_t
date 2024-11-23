@@ -1,13 +1,13 @@
 "use client";
 
+import { api } from "@/api";
+import { loginSchema } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { InputField } from "./InputField";
 import { MainButton } from "./MainButton";
-import { loginSchema } from "@/lib/validations/authSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { api } from "@/api";
 
 type LoginFormInputs = {
     emailOrUsername: string;

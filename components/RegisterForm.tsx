@@ -2,7 +2,7 @@
 
 import { api } from "@/api";
 import { InputField, MainButton } from "@/components";
-import { registerSchema } from "@/lib/validations/authSchema";
+import { registerSchema } from "@/lib/validations";
 import { RegisterFormInputs } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";

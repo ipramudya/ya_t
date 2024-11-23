@@ -9,14 +9,8 @@ export const profileSchema = z.object({
     birthday: z.string().min(1, "Birthday is required"),
     horoscope: z.string(),
     zodiac: z.string(),
-    height: z
-        .string()
-        .min(1, "Height is required")
-        .regex(/^\d+$/, "Please enter a valid number"),
-    weight: z
-        .string()
-        .min(1, "Weight is required")
-        .regex(/^\d+$/, "Please enter a valid number")
+    height: z.string().min(1, "Height is required").regex(/^\d+$/, "Please enter a valid number"),
+    weight: z.string().min(1, "Weight is required").regex(/^\d+$/, "Please enter a valid number")
 });
 
 export const getFieldConfig = (fieldName: keyof ProfileFormInputs) => {
