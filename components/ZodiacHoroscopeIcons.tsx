@@ -9,7 +9,8 @@ import {
     TbZodiacScorpio,
     TbZodiacSagittarius,
     TbZodiacAquarius,
-    TbZodiacPisces
+    TbZodiacPisces,
+    TbZodiacCapricorn
 } from "react-icons/tb";
 
 import {
@@ -35,8 +36,9 @@ export const ZodiacHoroscopeIcons = {
     Leo: <TbZodiacLeo />,
     Virgo: <TbZodiacVirgo />,
     Libra: <TbZodiacLibra />,
-    Scorpio: <TbZodiacScorpio />,
+    Scorpius: <TbZodiacScorpio />,
     Sagittarius: <TbZodiacSagittarius />,
+    Capricornus: <TbZodiacCapricorn />,
     Aquarius: <TbZodiacAquarius />,
     Pisces: <TbZodiacPisces />,
 
