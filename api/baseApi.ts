@@ -11,10 +11,7 @@ export class BaseApi {
         this.config = config;
     }
 
-    protected async fetcher<T>(
-        endpoint: string,
-        options?: RequestInit
-    ): Promise<T> {
+    protected async fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
         const headers: HeadersInit = {};
 
         // Check if the body is FormData

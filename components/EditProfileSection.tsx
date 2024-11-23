@@ -48,9 +48,7 @@ function ProfileSection() {
 
     if (!user) {
         return (
-            <p className="text-sm text-subtitle">
-                Add in your your to help others know you better
-            </p>
+            <p className="text-sm text-subtitle">Add in your your to help others know you better</p>
         );
     }
 
@@ -81,7 +79,7 @@ function ProfileSection() {
 }
 
 function ProfileForm({ children }: PropsWithChildren) {
-    const { user } = useUser();
+    const { user, updateUser } = useUser();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const setIsSubmitting = useSetAtom(isSubmittingAtom);
     const setIsEdited = useSetAtom(isEditedAtom);
@@ -125,9 +123,7 @@ function ProfileForm({ children }: PropsWithChildren) {
                 const values = calculateZodiac(birthday);
                 setDerivedValues(values);
             } catch (error) {
-                toast.error(
-                    `Error calculating zodiac: ${(error as Error).message}`
-                );
+                toast.error(`Error calculating zodiac: ${(error as Error).message}`);
             }
         }
     }, [birthday]);
@@ -156,9 +152,13 @@ function ProfileForm({ children }: PropsWithChildren) {
             const response = await api.profileService.upsertProfile(formData);
             toast.success(response.message);
 
+            // Update the user context
+            updateUser(response.data);
+
             setIsEdited(false);
         } catch (error) {
             console.error("Error submitting form:", error);
+            toast.error("Failed to update profile");
         } finally {
             setIsSubmitting(false);
         }
@@ -175,19 +175,13 @@ function ProfileForm({ children }: PropsWithChildren) {
                             <FormField
                                 key={fieldName}
                                 id={fieldName}
-                                {...getFieldConfig(
-                                    fieldName as keyof ProfileFormInputs
-                                )}
+                                {...getFieldConfig(fieldName as keyof ProfileFormInputs)}
                                 value={
-                                    fieldName === "horoscope" ||
-                                    fieldName === "zodiac"
+                                    fieldName === "horoscope" || fieldName === "zodiac"
                                         ? derivedValues[fieldName]
                                         : undefined
                                 }
-                                readOnly={
-                                    fieldName === "horoscope" ||
-                                    fieldName === "zodiac"
-                                }
+                                readOnly={fieldName === "horoscope" || fieldName === "zodiac"}
                                 register={register}
                                 error={errors[fieldName as keyof typeof errors]}
                             />
@@ -199,15 +193,9 @@ function ProfileForm({ children }: PropsWithChildren) {
     );
 }
 
-function ImageUploadButton({
-    onFileSelect
-}: {
-    onFileSelect: (file: File | null) => void;
-}) {
+function ImageUploadButton({ onFileSelect }: { onFileSelect: (file: File | null) => void }) {
     const { user } = useUser();
-    const [previewUrl, setPreviewUrl] = useState<string | null>(
-        user?.profileURL || null
-    );
+    const [previewUrl, setPreviewUrl] = useState<string | null>(user?.profileURL || null);
 
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -285,19 +273,13 @@ function FormField({
     return (
         <div className="flex flex-col">
             <div className="flex items-center justify-between gap-3">
-                <label
-                    htmlFor={id}
-                    className="shrink-0 text-sm text-[rgba(255,255,255,0.33)]"
-                >
+                <label htmlFor={id} className="shrink-0 text-sm text-[rgba(255,255,255,0.33)]">
                     {label}
                 </label>
                 {type === "select" ? (
                     <SelectField {...fieldProps}>
                         {options?.map((option: string) => (
-                            <option
-                                key={option.toLowerCase()}
-                                value={option.toLowerCase()}
-                            >
+                            <option key={option.toLowerCase()} value={option.toLowerCase()}>
                                 {option}
                             </option>
                         ))}
@@ -306,11 +288,7 @@ function FormField({
                     <InputField {...fieldProps} />
                 )}
             </div>
-            {error && (
-                <span className="mt-1 text-xs text-red-500">
-                    {error.message as string}
-                </span>
-            )}
+            {error && <span className="mt-1 text-xs text-red-500">{error.message as string}</span>}
         </div>
     );
 }
@@ -343,16 +321,11 @@ function SaveAndUpdateButton() {
                     Cancel
                 </span>
             </button>
-            <button
-                className="size-fit"
-                type="submit"
-                disabled={isSubmitting || !isValid}
-            >
+            <button className="size-fit" type="submit" disabled={isSubmitting || !isValid}>
                 <span
                     className={cn(
                         "golden-text text-sm",
-                        (isSubmitting || !isValid) &&
-                            "cursor-not-allowed opacity-50"
+                        (isSubmitting || !isValid) && "cursor-not-allowed opacity-50"
                     )}
                 >
                     Save & Update

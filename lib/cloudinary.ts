@@ -1,10 +1,6 @@
 "use server";
 
-import {
-    CLOUDINARY_API_KEY,
-    CLOUDINARY_API_SECRET,
-    CLOUDINARY_CLOUD_NAME
-} from "@/constant";
+import { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_CLOUD_NAME } from "@/constant";
 import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
 
 cloudinary.config({
@@ -31,9 +27,7 @@ const validateInputs = (file: File, userId: string) => {
     }
 };
 
-const getCloudinaryOptions = (
-    userId: string
-): UploadApiOptions & { public_id: string } => ({
+const getCloudinaryOptions = (userId: string): UploadApiOptions & { public_id: string } => ({
     folder: "youapp",
     resource_type: "auto",
     public_id: `user_${userId}`,
@@ -63,22 +57,16 @@ const uploadToCloudinary = (
     options: UploadApiOptions
 ): Promise<CloudinaryUploadResult> => {
     return new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-            options,
-            (error, result) => {
-                if (error) reject(error);
-                resolve(result as CloudinaryUploadResult);
-            }
-        );
+        const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) reject(error);
+            resolve(result as CloudinaryUploadResult);
+        });
 
         uploadStream.end(buffer);
     });
 };
 
-export async function storeImage(
-    userId: string,
-    file: File
-): Promise<CloudinaryUploadResult> {
+export async function storeImage(userId: string, file: File): Promise<CloudinaryUploadResult> {
     try {
         // Validate inputs
         validateInputs(file, userId);

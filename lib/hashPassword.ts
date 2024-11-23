@@ -19,8 +19,6 @@ export async function verifyPassword(password: string, hashedPassword: string) {
         const isMatch = await bcrypt.compare(password, hashedPassword);
         return isMatch;
     } catch (error) {
-        throw new Error(
-            "Error verifying password: " + (error as Error).message
-        );
+        throw new Error("Error verifying password: " + (error as Error).message);
     }
 }

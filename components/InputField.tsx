@@ -48,18 +48,7 @@ interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
 }
 
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-    (
-        {
-            className,
-            color,
-            dimmension,
-            readOnly,
-            error,
-            type = "text",
-            ...props
-        },
-        ref
-    ) => {
+    ({ className, color, dimmension, readOnly, error, type = "text", ...props }, ref) => {
         const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
         const togglePasswordVisibility = () => {
@@ -68,10 +57,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         const inputProps = {
             ref,
-            className: cn(
-                inputVariants({ color, dimmension, error }),
-                className
-            ),
+            className: cn(inputVariants({ color, dimmension, error }), className),
             disabled: readOnly,
             ...props
         };
@@ -82,18 +68,13 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         return (
             <div className="relative w-full">
-                <input
-                    type={isPasswordVisible ? "text" : "password"}
-                    {...inputProps}
-                />
+                <input type={isPasswordVisible ? "text" : "password"} {...inputProps} />
                 <button
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute right-4 top-1/2 size-fit -translate-y-1/2"
                     disabled={readOnly}
-                    aria-label={
-                        isPasswordVisible ? "Hide password" : "Show password"
-                    }
+                    aria-label={isPasswordVisible ? "Hide password" : "Show password"}
                 >
                     <Icons.Eye />
                 </button>

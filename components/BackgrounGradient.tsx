@@ -7,12 +7,7 @@ export function BackgrounGradient() {
             className="fixed left-[-20px] top-[-20px] z-[-1] h-[calc(100%+40px)] w-[calc(100%+40px)]"
             preserveAspectRatio="none"
         >
-            <rect
-                width="100%"
-                height="100%"
-                rx="24"
-                fill="url(#paint0_radial_11_2488)"
-            />
+            <rect width="100%" height="100%" rx="24" fill="url(#paint0_radial_11_2488)" />
             <defs>
                 <radialGradient
                     id="paint0_radial_11_2488"

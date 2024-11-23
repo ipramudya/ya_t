@@ -9,12 +9,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     navigateTo?: string;
 }
 
-export function EditButton({
-    className,
-    navigateTo,
-    onClick,
-    ...props
-}: Props) {
+export function EditButton({ className, navigateTo, onClick, ...props }: Props) {
     const router = useRouter();
 
     function handleEdit(e: React.MouseEvent<HTMLButtonElement>) {

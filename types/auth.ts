@@ -1,6 +1,4 @@
-interface ServerResponse {
-    message: string;
-}
+import { ServerResponse } from "./response";
 
 export type RegisterServerResponse = ServerResponse;
 

@@ -7,8 +7,6 @@ interface Props extends PropsWithChildren {
 
 export function Box({ children, className }: Props) {
     return (
-        <section className={cn("relative rounded-[14px] p-[14px]", className)}>
-            {children}
-        </section>
+        <section className={cn("relative rounded-[14px] p-[14px]", className)}>{children}</section>
     );
 }

@@ -43,10 +43,11 @@ export async function POST(request: Request) {
             data.profileURL = uploadedImage.secure_url;
         }
 
-        await upsertProfile(payload.userId, data);
+        const updated = await upsertProfile(payload.userId, data);
 
         return NextResponse.json({
-            message: "profile uploaded successfully"
+            message: "profile uploaded successfully",
+            data: updated
         });
     } catch (error) {
         console.log("error updating profile:", error);

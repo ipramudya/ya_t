@@ -17,9 +17,7 @@ export function InterestSection() {
                 <h3 className="text-sm font-semibold">Interest</h3>
                 <EditButton onClick={handleNavigateToInterest} />
             </div>
-            <p className="text-sm text-subtitle">
-                Add in your interest to find a better match
-            </p>
+            <p className="text-sm text-subtitle">Add in your interest to find a better match</p>
         </Box>
     );
 }

@@ -4,10 +4,6 @@ interface ConditionalWrapperProps extends PropsWithChildren {
     condition: boolean;
     Wrapper: ComponentType<{ children: ReactNode }>;
 }
-export function ConditionalWrapper({
-    Wrapper,
-    condition,
-    children
-}: ConditionalWrapperProps) {
+export function ConditionalWrapper({ Wrapper, condition, children }: ConditionalWrapperProps) {
     return condition ? <Wrapper>{children}</Wrapper> : children;
 }

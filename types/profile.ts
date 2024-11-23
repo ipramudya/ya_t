@@ -1,3 +1,6 @@
+import { ServerResponse } from "./response";
+import { UserData } from "./user";
+
 export interface ProfileFormInputs {
     displayName: string;
     gender: "male" | "female";
@@ -18,4 +21,8 @@ export interface ProfileDatabaseRequest {
     interest?: string[];
     userId: string;
     profileURL: string;
+}
+
+export interface ProfileResponse extends ServerResponse {
+    data: UserData;
 }

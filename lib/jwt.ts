@@ -10,9 +10,7 @@ interface JWTPayload {
     email: string;
 }
 
-export async function generateAccessToken(
-    payload: JWTPayload
-): Promise<string> {
+export async function generateAccessToken(payload: JWTPayload): Promise<string> {
     return jwt.sign(payload, JWT_SECRET, {
         expiresIn: JWT_EXPIRES_IN
     });

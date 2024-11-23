@@ -12,11 +12,7 @@ interface Props extends PropsWithChildren {
     classNames?: ClassNames;
 }
 
-export function AppContainer({
-    children,
-    classNames,
-    inputPage = false
-}: Props) {
+export function AppContainer({ children, classNames, inputPage = false }: Props) {
     return (
         <>
             {inputPage && <BackgrounGradient />}
