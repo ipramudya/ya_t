@@ -1,22 +1,11 @@
+import { authenticateRequest } from "@/lib";
 import { addInterest } from "@/lib/db/queries";
-import { verifyToken } from "@/lib/jwt";
-import { tokenManager } from "@/lib/tokenManager";
 import { AddProfileInterestPayloadRequest } from "@/types/profile";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-        const [tokenization, jsonReq] = await Promise.all([tokenManager(), request.json()]);
-
-        const token = tokenization.getToken();
-        if (!token) {
-            throw new Error("unauthorized: no token provided");
-        }
-
-        const payload = await verifyToken(token);
-        if (!payload) {
-            throw new Error("unauthorized: invalid token");
-        }
+        const [payload, jsonReq] = await Promise.all([authenticateRequest(), request.json()]);
 
         const { interests } = jsonReq as AddProfileInterestPayloadRequest;
 

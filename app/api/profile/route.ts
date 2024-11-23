@@ -1,27 +1,12 @@
+import { authenticateRequest } from "@/lib";
 import { storeImage } from "@/lib/cloudinary";
 import { upsertProfile } from "@/lib/db/queries";
-import { verifyToken } from "@/lib/jwt";
-import { tokenManager } from "@/lib/tokenManager";
 import { ProfileDatabaseRequest } from "@/types/profile";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-        const [tokenization, formData] = await Promise.all([
-            tokenManager(),
-            request.formData()
-        ]);
-
-        const token = tokenization.getToken();
-
-        if (!token) {
-            throw new Error("unauthorized: no token provided");
-        }
-
-        const payload = await verifyToken(token);
-        if (!payload) {
-            throw new Error("unauthorized: invalid token");
-        }
+        const [payload, formData] = await Promise.all([authenticateRequest(), request.formData()]);
 
         const data = {
             displayName: formData.get("displayName") as string,
@@ -36,10 +21,7 @@ export async function POST(request: Request) {
         // Handle image upload only if an image is provided
         const profileImage = formData.get("profileImage") as File | null;
         if (profileImage) {
-            const uploadedImage = await storeImage(
-                payload.userId,
-                profileImage
-            );
+            const uploadedImage = await storeImage(payload.userId, profileImage);
             data.profileURL = uploadedImage.secure_url;
         }
 
@@ -51,9 +33,6 @@ export async function POST(request: Request) {
         });
     } catch (error) {
         console.log("error updating profile:", error);
-        return NextResponse.json(
-            { message: "failed to update profile" },
-            { status: 401 }
-        );
+        return NextResponse.json({ message: "failed to update profile" }, { status: 401 });
     }
 }
