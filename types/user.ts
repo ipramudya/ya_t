@@ -22,10 +22,10 @@ export interface UserData {
     email: string;
     displayName: string;
     gender: "male" | "female";
-    birthdate: Date;
+    birthday: Date;
     height: number;
     weight: number;
     profileId: string;
-    profileURL: string;
+    profileURL: string | null;
     interests: string[];
 }

@@ -15,9 +15,7 @@ export type LoginPayloadRequest = {
     password: string;
 };
 
-export type LoginServerResponse = ServerResponse & {
-    token?: string;
-};
+export type LoginServerResponse = ServerResponse;
 
 export interface RegisterFormInputs {
     email: string;

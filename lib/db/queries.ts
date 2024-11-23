@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { ProfileDatabaseRequest } from "@/types/profile";
 import { UserDatabaseRequest } from "@/types/user";
+import { eq, sql } from "drizzle-orm";
 import { db } from "./client";
 import { profilesTable as profiles, usersTable as users } from "./schema";
-import { eq, sql } from "drizzle-orm";
-import { ProfileDatabaseRequestV2 } from "@/types/profile";
 
 export async function createUser(userData: UserDatabaseRequest) {
     try {
@@ -48,7 +49,7 @@ export async function getUserByEmailOrUsername(emailOrUsername: string) {
 
 export async function upsertProfile(
     userId: string,
-    profileData: ProfileDatabaseRequestV2
+    profileData: ProfileDatabaseRequest
 ) {
     try {
         const [existingProfile] = await db
@@ -59,22 +60,30 @@ export async function upsertProfile(
         const remappedData = {
             displayName: profileData.displayName,
             gender: profileData.gender,
-            birthdate: new Date(profileData.birthday),
+            birthday: profileData.birthday,
             height: profileData.height,
             weight: profileData.weight,
-            profileURL: profileData.profileURL,
             userId
-        };
+        } as ProfileDatabaseRequest;
+
+        // Only include profileURL if it's provided
+        if (profileData.profileURL) {
+            remappedData.profileURL = profileData.profileURL;
+        }
 
         if (existingProfile) {
             const [updated] = await db
                 .update(profiles)
                 .set(remappedData)
-                .where(eq(profiles.id, userId))
+                .where(eq(profiles.userId, userId))
                 .returning();
 
             return updated;
         } else {
+            // For new profile, ensure profileURL is set
+            if (!remappedData.profileURL) {
+                remappedData.profileURL = ""; // or a default image URL
+            }
             const [inserted] = await db
                 .insert(profiles)
                 .values(remappedData)
@@ -97,7 +106,7 @@ export async function getUserProfile(userId: string) {
                 email: users.email,
                 displayName: profiles.displayName,
                 gender: profiles.gender,
-                birthdate: profiles.birthdate,
+                birthday: profiles.birthday,
                 height: profiles.height,
                 weight: profiles.weight,
                 profileId: profiles.id,

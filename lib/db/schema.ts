@@ -28,14 +28,14 @@ export const profilesTable = pgTable("profiles", {
     id: uuid().primaryKey().defaultRandom(),
     displayName: varchar("display_name", { length: 255 }).notNull(),
     gender: genderEnum().notNull(),
-    birthdate: timestamp("birthdate").notNull(),
+    birthday: timestamp().notNull(),
     height: integer().notNull(),
     weight: integer().notNull(),
     interests: text()
         .array()
         .notNull()
         .default(sql`ARRAY[]::text[]`),
-    profileURL: varchar("profile_url", { length: 255 }).notNull(),
+    profileURL: varchar("profile_url", { length: 255 }),
     ...timestamps,
     userId: uuid("user_id")
         .references(() => usersTable.id, { onDelete: "cascade" })

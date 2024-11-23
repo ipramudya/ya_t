@@ -81,8 +81,8 @@ export interface ZodiacResult {
     zodiac: string;
 }
 
-export function calculateZodiac(birthDate: string): ZodiacResult {
-    const date = new Date(birthDate);
+export function calculateZodiac(birthday: string): ZodiacResult {
+    const date = new Date(birthday);
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const year = date.getFullYear();

@@ -1,4 +1,4 @@
-import { createUser } from "@/lib/database";
+import { createUser } from "@/lib/db/queries";
 import { hashPassword } from "@/lib/hashPassword";
 import { RegisterPayloadRequest, RegisterServerResponse } from "@/types/auth";
 import { NextResponse } from "next/server";

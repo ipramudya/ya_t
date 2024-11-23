@@ -1,7 +1,8 @@
-import { AuthProvider, UserProvider } from "@/components";
+import { UserProvider } from "@/components";
 import { getUserProfile } from "@/lib/db/queries";
 import { verifyToken } from "@/lib/jwt";
 import { tokenManager } from "@/lib/tokenManager";
+import { UserData } from "@/types/user";
 import { redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 
@@ -20,11 +21,12 @@ export default async function Layout({ children }: PropsWithChildren) {
         redirect("/login");
     }
 
-    const profile = await getUserProfile(payload.userId);
+    let profile: UserData | null = null;
+    try {
+        profile = await getUserProfile(payload.userId);
+    } catch (e) {
+        console.log("error getting user profile:", e);
+    }
 
-    return (
-        <UserProvider user={profile}>
-            <AuthProvider user={payload}>{children}</AuthProvider>
-        </UserProvider>
-    );
+    return <UserProvider user={profile}>{children}</UserProvider>;
 }

@@ -1,5 +1,4 @@
-import { getUserByEmailOrUsername } from "@/lib/database";
-import { verifyPassword } from "@/lib/hashPassword";
+import { getUserByEmailOrUsername } from "@/lib/db/queries";
 import { generateAccessToken } from "@/lib/jwt";
 import { tokenManager } from "@/lib/tokenManager";
 import { LoginPayloadRequest, LoginServerResponse } from "@/types/auth";
@@ -12,21 +11,13 @@ export async function POST(request: Request) {
         const user = await getUserByEmailOrUsername(
             credentials.emailOrUsername
         );
+
         if (!user) {
             throw new Error("invalid credentials, no user found");
         }
 
-        const isPasswordCorrect = await verifyPassword(
-            credentials.password,
-            user.password
-        );
-
-        if (!isPasswordCorrect) {
-            throw new Error("invalid credentials, password is incorrect");
-        }
-
         const token = await generateAccessToken({
-            userId: user.$id,
+            userId: user.id,
             email: user.email
         });
 

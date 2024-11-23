@@ -9,40 +9,13 @@ export interface ProfileFormInputs {
     profileImage?: File;
 }
 
-export interface ProfileDatabaseRequestV2 {
-    displayName: string;
-    gender: "male" | "female";
-    birthday: string;
-    height: number;
-    weight: number;
-    interest?: string[];
-    userID: string;
-    profileURL: string;
-}
-
 export interface ProfileDatabaseRequest {
     displayName: string;
     gender: "male" | "female";
-    birthday: string; // ISO string
+    birthday: Date;
     height: number;
     weight: number;
     interest?: string[];
-    userID: string;
-    profilePictureID?: string;
-}
-
-export interface ProfileDatabaseResponse extends ProfileDatabaseRequest {
-    $id: string;
-    $createdAt: string;
-    $updatedAt: string;
-}
-
-export interface EnhancedProfileResponse
-    extends Omit<ProfileDatabaseResponse, "profilePictureID"> {
-    profilePictureURL?: string;
-}
-
-export interface ProfileResponse {
-    profile: ProfileDatabaseResponse;
-    message: string;
+    userId: string;
+    profileURL: string;
 }

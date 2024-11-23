@@ -1,4 +1,3 @@
-export * from "./providers/AuthProvider";
 export * from "./providers/JotaiProvider";
 export * from "./providers/UserProvider";
 

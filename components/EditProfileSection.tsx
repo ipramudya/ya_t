@@ -54,7 +54,7 @@ function ProfileSection() {
         );
     }
 
-    const birthday = new Date(user.birthdate);
+    const birthday = new Date(user.birthday);
     const { horoscope, zodiac } = calculateZodiac(birthday.toISOString());
 
     const profileData = {
@@ -87,8 +87,8 @@ function ProfileForm({ children }: PropsWithChildren) {
     const setIsEdited = useSetAtom(isEditedAtom);
 
     // Calculate initial horoscope and zodiac if birthday exists
-    const initialBirthday = user?.birthdate
-        ? new Date(user.birthdate).toISOString().split("T")[0]
+    const initialBirthday = user?.birthday
+        ? new Date(user.birthday).toISOString().split("T")[0]
         : "";
     const initialZodiacValues = initialBirthday
         ? calculateZodiac(initialBirthday)

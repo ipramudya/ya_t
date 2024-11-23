@@ -7,7 +7,7 @@ export class ProfileService extends BaseApi {
     }
 
     async upsertProfile(formData: FormData): Promise<ProfileResponse> {
-        return this.fetcher<ProfileResponse>("/api/v2/profile", {
+        return this.fetcher<ProfileResponse>("/api/profile", {
             method: "POST",
             body: formData,
             headers: {
