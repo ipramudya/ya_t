@@ -13,7 +13,8 @@ const inputVariants = tv({
     variants: {
         color: {
             primary: "border-transparent bg-white-input",
-            outlined: "border-input-border bg-darken-input"
+            outlined:
+                "border-input-border bg-darken-input disabled:cursor-not-allowed disabled:opacity-50"
         },
         dimmension: {
             sm: "h-9",
