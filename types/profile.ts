@@ -9,6 +9,17 @@ export interface ProfileFormInputs {
     profileImage?: File;
 }
 
+export interface ProfileDatabaseRequestV2 {
+    displayName: string;
+    gender: "male" | "female";
+    birthday: string;
+    height: number;
+    weight: number;
+    interest?: string[];
+    userID: string;
+    profileURL: string;
+}
+
 export interface ProfileDatabaseRequest {
     displayName: string;
     gender: "male" | "female";

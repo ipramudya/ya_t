@@ -1,31 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { api } from "@/api";
+import { useUser } from "@/hooks/useUser";
+import { calculateAge, cn, formatDate } from "@/lib";
+import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
+import { calculateZodiac } from "@/lib/zodiac";
+import { ProfileFormInputs } from "@/types/profile";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 import { Box } from "./Box";
 import { ConditionalWrapper } from "./ConditionalWrapper";
 import { EditButton } from "./EditButton";
 import { Icons } from "./Icons";
 import { InputField } from "./InputField";
 import { SelectField } from "./SelectField";
-import { calculateZodiac } from "@/lib/zodiac";
-import { toast } from "sonner";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
-import { ProfileFormInputs } from "@/types/profile";
-import { cn } from "@/lib";
-import { api } from "@/api";
-
-const MOCK_PROFILE_DATA = {
-    birthday: "28 / 08 / 1995",
-    age: 28,
-    horoscope: "Virgo",
-    zodiac: "Pig",
-    height: "172 cm",
-    weight: "60 kg"
-};
 
 const isEditedAtom = atom(false);
 const isSubmittingAtom = atom(false);
@@ -51,9 +43,10 @@ export function EditProfileSection() {
     );
 }
 
-const hasData = true; // TODO: Replace with actual data check
 function ProfileSection() {
-    if (!hasData) {
+    const { user } = useUser();
+
+    if (!user) {
         return (
             <p className="text-sm text-subtitle">
                 Add in your your to help others know you better
@@ -61,11 +54,25 @@ function ProfileSection() {
         );
     }
 
+    const birthday = new Date(user.birthdate);
+    const { horoscope, zodiac } = calculateZodiac(birthday.toISOString());
+
+    const profileData = {
+        birthday: formatDate(birthday),
+        age: calculateAge(birthday),
+        horoscope: horoscope || "N/A",
+        zodiac: zodiac || "N/A",
+        height: user.height ? `${user.height} cm` : "N/A",
+        weight: user.weight ? `${user.weight} kg` : "N/A"
+    };
+
     return (
         <div className="flex flex-col gap-3">
-            {Object.entries(MOCK_PROFILE_DATA).map(([key, value]) => (
+            {Object.entries(profileData).map(([key, value]) => (
                 <p key={key} className="text-sm">
-                    <span className="text-[rgba(255,255,255,0.33)]">{`${key.charAt(0).toUpperCase() + key.slice(1)}:`}</span>
+                    <span className="text-[rgba(255,255,255,0.33)]">
+                        {`${key.charAt(0).toUpperCase() + key.slice(1)}:`}
+                    </span>
                     <span className="text-white">{` ${value}`}</span>
                 </p>
             ))}
@@ -74,31 +81,56 @@ function ProfileSection() {
 }
 
 function ProfileForm({ children }: PropsWithChildren) {
+    const { user } = useUser();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const setIsSubmitting = useSetAtom(isSubmittingAtom);
+    const setIsEdited = useSetAtom(isEditedAtom);
+
+    // Calculate initial horoscope and zodiac if birthday exists
+    const initialBirthday = user?.birthdate
+        ? new Date(user.birthdate).toISOString().split("T")[0]
+        : "";
+    const initialZodiacValues = initialBirthday
+        ? calculateZodiac(initialBirthday)
+        : { horoscope: "", zodiac: "" };
+
+    const [derivedValues, setDerivedValues] = useState(initialZodiacValues);
 
     const form = useForm<ProfileFormInputs>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            displayName: "",
-            gender: "male",
-            birthday: "",
-            horoscope: "",
-            zodiac: "",
-            height: "",
-            weight: "",
+            displayName: user?.displayName || "",
+            gender: user?.gender || "male",
+            height: user?.height?.toString() || "",
+            weight: user?.weight?.toString() || "",
+            birthday: initialBirthday,
+            horoscope: initialZodiacValues.horoscope,
+            zodiac: initialZodiacValues.zodiac,
             profileImage: undefined
         }
     });
+
     const {
         register,
         handleSubmit,
         watch,
-        setValue,
         formState: { errors }
     } = form;
 
-    const setIsSubmitting = useSetAtom(isSubmittingAtom);
-    const setIsEdited = useSetAtom(isEditedAtom);
+    const birthday = watch("birthday");
+
+    useEffect(() => {
+        if (birthday) {
+            try {
+                const values = calculateZodiac(birthday);
+                setDerivedValues(values);
+            } catch (error) {
+                toast.error(
+                    `Error calculating zodiac: ${(error as Error).message}`
+                );
+            }
+        }
+    }, [birthday]);
 
     const onSubmit = handleSubmit(async (data) => {
         setIsSubmitting(true);
@@ -122,7 +154,6 @@ function ProfileForm({ children }: PropsWithChildren) {
             }
 
             const response = await api.profileService.upsertProfile(formData);
-            console.log({ response });
             toast.success(response.message);
 
             setIsEdited(false);
@@ -132,22 +163,6 @@ function ProfileForm({ children }: PropsWithChildren) {
             setIsSubmitting(false);
         }
     });
-
-    const birthday = watch("birthday");
-
-    useEffect(() => {
-        if (birthday) {
-            try {
-                const { horoscope, zodiac } = calculateZodiac(birthday);
-                setValue("horoscope", horoscope);
-                setValue("zodiac", zodiac);
-            } catch (error) {
-                toast.error(
-                    `"error calculating zodiac, ${(error as Error).message}"`
-                );
-            }
-        }
-    }, [birthday, setValue]);
 
     return (
         <FormProvider {...form}>
@@ -163,10 +178,18 @@ function ProfileForm({ children }: PropsWithChildren) {
                                 {...getFieldConfig(
                                     fieldName as keyof ProfileFormInputs
                                 )}
-                                register={register}
-                                error={
-                                    errors[fieldName as keyof ProfileFormInputs]
+                                value={
+                                    fieldName === "horoscope" ||
+                                    fieldName === "zodiac"
+                                        ? derivedValues[fieldName]
+                                        : undefined
                                 }
+                                readOnly={
+                                    fieldName === "horoscope" ||
+                                    fieldName === "zodiac"
+                                }
+                                register={register}
+                                error={errors[fieldName as keyof typeof errors]}
                             />
                         ))}
                     </div>
@@ -181,23 +204,27 @@ function ImageUploadButton({
 }: {
     onFileSelect: (file: File | null) => void;
 }) {
-    const { watch } = useFormContext<ProfileFormInputs>();
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const { user } = useUser();
+    const [previewUrl, setPreviewUrl] = useState<string | null>(
+        user?.profileURL || null
+    );
 
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             onFileSelect(file);
+            // Revoke previous object URL if it exists
+            if (previewUrl && !previewUrl.includes("http")) {
+                URL.revokeObjectURL(previewUrl);
+            }
             const url = URL.createObjectURL(file);
             setPreviewUrl(url);
         }
     };
 
-    const selectedImage = watch("profileImage");
-
     useEffect(() => {
         return () => {
-            if (previewUrl) {
+            if (previewUrl && !previewUrl.includes("http")) {
                 URL.revokeObjectURL(previewUrl);
             }
         };
@@ -218,7 +245,7 @@ function ImageUploadButton({
                 )}
             </div>
             <label htmlFor="profileImage" className="cursor-pointer text-sm">
-                {selectedImage ? "Change image" : "Add image"}
+                {previewUrl ? "Change image" : "Add image"}
             </label>
             <input
                 type="file"
@@ -238,17 +265,21 @@ function FormField({
     placeholder,
     options,
     validation,
-    register,
     error,
-    readOnly
+    readOnly,
+    value
 }: any) {
-    const commonProps = {
+    const { register } = useFormContext<ProfileFormInputs>();
+
+    const fieldProps = {
         id,
-        className: "max-w-[200px]",
-        dimmension: "sm",
-        color: "outlined",
+        type,
+        placeholder,
+        dimmension: "sm" as const,
+        color: "outlined" as const,
         readOnly,
-        ...register(id, validation)
+        className: "max-w-[200px]",
+        ...(readOnly ? { value } : register(id, validation))
     };
 
     return (
@@ -261,7 +292,7 @@ function FormField({
                     {label}
                 </label>
                 {type === "select" ? (
-                    <SelectField {...commonProps}>
+                    <SelectField {...fieldProps}>
                         {options?.map((option: string) => (
                             <option
                                 key={option.toLowerCase()}
@@ -272,11 +303,7 @@ function FormField({
                         ))}
                     </SelectField>
                 ) : (
-                    <InputField
-                        {...commonProps}
-                        type={type}
-                        placeholder={placeholder}
-                    />
+                    <InputField {...fieldProps} />
                 )}
             </div>
             {error && (
@@ -289,26 +316,48 @@ function FormField({
 }
 
 function SaveAndUpdateButton() {
+    const setIsEdited = useSetAtom(isEditedAtom);
     const isSubmitting = useAtomValue(isSubmittingAtom);
     const {
         formState: { isValid }
     } = useFormContext<ProfileFormInputs>();
 
+    function handleCancel() {
+        setIsEdited((state) => !state);
+    }
+
     return (
-        <button
-            className="size-fit"
-            type="submit"
-            disabled={isSubmitting || !isValid}
-        >
-            <span
-                className={cn(
-                    "golden-text text-sm",
-                    (isSubmitting || !isValid) &&
-                        "cursor-not-allowed opacity-50"
-                )}
+        <div className="flex items-center gap-4">
+            <button
+                className="size-fit"
+                type="button"
+                disabled={isSubmitting}
+                onClick={handleCancel}
             >
-                Save & Update
-            </span>
-        </button>
+                <span
+                    className={cn(
+                        "text-sm font-semibold",
+                        isSubmitting && "cursor-not-allowed opacity-50"
+                    )}
+                >
+                    Cancel
+                </span>
+            </button>
+            <button
+                className="size-fit"
+                type="submit"
+                disabled={isSubmitting || !isValid}
+            >
+                <span
+                    className={cn(
+                        "golden-text text-sm",
+                        (isSubmitting || !isValid) &&
+                            "cursor-not-allowed opacity-50"
+                    )}
+                >
+                    Save & Update
+                </span>
+            </button>
+        </div>
     );
 }

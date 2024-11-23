@@ -15,3 +15,17 @@ export interface UserDatabaseResponse {
     $databaseId: string;
     $collectionId: string;
 }
+
+export interface UserData {
+    id: string;
+    username: string;
+    email: string;
+    displayName: string;
+    gender: "male" | "female";
+    birthdate: Date;
+    height: number;
+    weight: number;
+    profileId: string;
+    profileURL: string;
+    interests: string[];
+}
