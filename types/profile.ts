@@ -26,3 +26,7 @@ export interface ProfileDatabaseRequest {
 export interface ProfileResponse extends ServerResponse {
     data: UserData;
 }
+
+export interface AddProfileInterestPayloadRequest {
+    interests: string[];
+}

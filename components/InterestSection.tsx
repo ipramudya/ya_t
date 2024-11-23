@@ -1,11 +1,13 @@
 "use client";
 
+import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { Box } from "./Box";
 import { EditButton } from "./EditButton";
 
 export function InterestSection() {
     const router = useRouter();
+    const { user } = useUser();
 
     function handleNavigateToInterest() {
         router.push("/interest");
@@ -17,7 +19,23 @@ export function InterestSection() {
                 <h3 className="text-sm font-semibold">Interest</h3>
                 <EditButton onClick={handleNavigateToInterest} />
             </div>
-            <p className="text-sm text-subtitle">Add in your interest to find a better match</p>
+            {!user || user.interests.length === 0 ? (
+                <p className="text-sm text-subtitle">Add in your interest to find a better match</p>
+            ) : (
+                <div className="flex flex-wrap gap-2">
+                    {user.interests.map((interest) => (
+                        <InterestItem key={`interest-${interest}`} interest={interest} />
+                    ))}
+                </div>
+            )}
         </Box>
+    );
+}
+
+function InterestItem({ interest }: { interest: string }) {
+    return (
+        <div className="flex items-center justify-center rounded-full bg-[rgba(255,255,255,0.06)] px-4 py-2">
+            <p className="text-sm font-semibold capitalize text-white">{interest}</p>
+        </div>
     );
 }

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { api } from "@/api";
 import { useUser } from "@/hooks/useUser";
-import { calculateAge, cn, formatDate } from "@/lib";
+import { calculateAge, formatDate } from "@/lib";
 import { getFieldConfig, profileSchema } from "@/lib/validations/profileSchema";
 import { calculateZodiac } from "@/lib/zodiac";
 import { ProfileFormInputs } from "@/types/profile";
@@ -157,7 +159,7 @@ function ProfileForm({ children }: PropsWithChildren) {
 
             setIsEdited(false);
         } catch (error) {
-            console.error("Error submitting form:", error);
+            console.error("error submitting form:", error);
             toast.error("Failed to update profile");
         } finally {
             setIsSubmitting(false);
@@ -222,7 +224,6 @@ function ImageUploadButton({ onFileSelect }: { onFileSelect: (file: File | null)
         <div className="flex items-center gap-4">
             <div className="flex size-[57px] items-center justify-center rounded-[17px] bg-[rgba(255,255,255,0.08)]">
                 {previewUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                         src={previewUrl}
                         alt="Preview"
@@ -312,22 +313,12 @@ function SaveAndUpdateButton() {
                 disabled={isSubmitting}
                 onClick={handleCancel}
             >
-                <span
-                    className={cn(
-                        "text-sm font-semibold",
-                        isSubmitting && "cursor-not-allowed opacity-50"
-                    )}
-                >
+                <span className="text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50">
                     Cancel
                 </span>
             </button>
             <button className="size-fit" type="submit" disabled={isSubmitting || !isValid}>
-                <span
-                    className={cn(
-                        "golden-text text-sm",
-                        (isSubmitting || !isValid) && "cursor-not-allowed opacity-50"
-                    )}
-                >
+                <span className="golden-text text-sm disabled:cursor-not-allowed disabled:opacity-50">
                     Save & Update
                 </span>
             </button>

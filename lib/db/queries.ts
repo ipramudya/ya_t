@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { ProfileDatabaseRequest } from "@/types/profile";
@@ -12,9 +11,7 @@ export async function createUser(userData: UserDatabaseRequest) {
         const [existingUser] = await db
             .select()
             .from(users)
-            .where(
-                sql`email = ${userData.email} OR username = ${userData.username}`
-            );
+            .where(sql`email = ${userData.email} OR username = ${userData.username}`);
 
         if (existingUser) {
             throw new Error("email or username already registered");
@@ -36,9 +33,7 @@ export async function getUserByEmailOrUsername(emailOrUsername: string) {
         const [user] = await db
             .select()
             .from(users)
-            .where(
-                sql`email = ${emailOrUsername} OR username = ${emailOrUsername}`
-            );
+            .where(sql`email = ${emailOrUsername} OR username = ${emailOrUsername}`);
 
         return user;
     } catch (error) {
@@ -47,10 +42,7 @@ export async function getUserByEmailOrUsername(emailOrUsername: string) {
     }
 }
 
-export async function upsertProfile(
-    userId: string,
-    profileData: ProfileDatabaseRequest
-) {
+export async function upsertProfile(userId: string, profileData: ProfileDatabaseRequest) {
     try {
         const [existingProfile] = await db
             .select()
@@ -84,11 +76,8 @@ export async function upsertProfile(
             if (!remappedData.profileURL) {
                 remappedData.profileURL = ""; // or a default image URL
             }
-            const [inserted] = await db
-                .insert(profiles)
-                .values(remappedData)
-                .returning();
 
+            const [inserted] = await db.insert(profiles).values(remappedData).returning();
             return inserted;
         }
     } catch (error) {
@@ -124,6 +113,32 @@ export async function getUserProfile(userId: string) {
         return profile;
     } catch (error) {
         console.log("error getting user profile:", error);
+        throw error;
+    }
+}
+
+export async function addInterest(userId: string, interests: string[]) {
+    try {
+        const [existingProfile] = await db
+            .select()
+            .from(profiles)
+            .where(sql`user_id = ${userId}`);
+
+        if (!existingProfile) {
+            throw new Error("profile not found");
+        }
+
+        const [updated] = await db
+            .update(profiles)
+            .set({ interests })
+            .where(sql`user_id = ${userId}`)
+            .returning();
+
+        return updated;
+
+        return updated;
+    } catch (error) {
+        console.log("error upserting interest:", error);
         throw error;
     }
 }

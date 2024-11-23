@@ -24,8 +24,8 @@ export default async function Layout({ children }: PropsWithChildren) {
     let profile: UserData | null = null;
     try {
         profile = await getUserProfile(payload.userId);
-    } catch (e) {
-        console.log("error getting user profile:", e);
+    } catch (error) {
+        console.log("error getting user profile:", error);
     }
 
     return <UserProvider user={profile}>{children}</UserProvider>;

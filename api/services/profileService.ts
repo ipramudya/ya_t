@@ -15,4 +15,11 @@ export class ProfileService extends BaseApi {
             }
         });
     }
+
+    async addInterests(interests: string[]): Promise<ProfileResponse> {
+        return this.fetcher<ProfileResponse>("/api/profile/interest", {
+            method: "POST",
+            body: JSON.stringify({ interests })
+        });
+    }
 }
