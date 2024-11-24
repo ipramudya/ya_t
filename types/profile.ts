@@ -1,5 +1,5 @@
-import { ServerResponse } from "./response";
-import { UserData } from "./user";
+import type { ServerResponse } from "./response";
+import type { UserData } from "./user";
 
 export interface ProfileFormInputs {
     displayName: string;

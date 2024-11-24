@@ -1,4 +1,4 @@
-import {
+import type {
     LoginPayloadRequest,
     LoginServerResponse,
     RegisterPayloadRequest,

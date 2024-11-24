@@ -1,16 +1,14 @@
 import { getUserByEmailOrUsername } from "@/lib/db/queries";
 import { generateAccessToken } from "@/lib/jwt";
 import { tokenManager } from "@/lib/tokenManager";
-import { LoginPayloadRequest, LoginServerResponse } from "@/types/auth";
+import type { LoginPayloadRequest, LoginServerResponse } from "@/types/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
         const credentials: LoginPayloadRequest = await request.json();
 
-        const user = await getUserByEmailOrUsername(
-            credentials.emailOrUsername
-        );
+        const user = await getUserByEmailOrUsername(credentials.emailOrUsername);
 
         if (!user) {
             throw new Error("invalid credentials, no user found");

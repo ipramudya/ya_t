@@ -1,6 +1,6 @@
 import { createUser } from "@/lib/db/queries";
 import { hashPassword } from "@/lib/hashPassword";
-import { RegisterPayloadRequest, RegisterServerResponse } from "@/types/auth";
+import type { RegisterPayloadRequest, RegisterServerResponse } from "@/types/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {

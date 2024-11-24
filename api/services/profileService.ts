@@ -1,4 +1,4 @@
-import { ProfileResponse } from "@/types/profile";
+import type { ProfileResponse } from "@/types/profile";
 import { ApiConfig, BaseApi } from "../baseApi";
 
 export class ProfileService extends BaseApi {

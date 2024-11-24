@@ -1,4 +1,4 @@
-import { ProfileFormInputs } from "@/types/profile";
+import type { ProfileFormInputs } from "@/types/profile";
 import { z } from "zod";
 
 export const profileSchema = z.object({

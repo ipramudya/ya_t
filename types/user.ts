@@ -4,18 +4,6 @@ export interface UserDatabaseRequest {
     password: string;
 }
 
-export interface UserDatabaseResponse {
-    email: string;
-    username: string;
-    password: string;
-    $id: string;
-    $permissions: [];
-    $createdAt: string;
-    $updatedAt: string;
-    $databaseId: string;
-    $collectionId: string;
-}
-
 export interface UserData {
     id: string;
     username: string;

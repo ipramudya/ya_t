@@ -1,7 +1,7 @@
 "use server";
 
 import { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_CLOUD_NAME } from "@/constant";
-import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
+import { v2 as cloudinary, type UploadApiOptions } from "cloudinary";
 
 cloudinary.config({
     cloud_name: CLOUDINARY_CLOUD_NAME,

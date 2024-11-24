@@ -47,7 +47,7 @@ export async function upsertProfile(userId: string, profileData: ProfileDatabase
         const [existingProfile] = await db
             .select()
             .from(profiles)
-            .where(eq(profiles.userId, userId));
+            .where(sql`user_id = ${userId}`);
 
         const remappedData = {
             displayName: profileData.displayName,
@@ -67,7 +67,7 @@ export async function upsertProfile(userId: string, profileData: ProfileDatabase
             const [updated] = await db
                 .update(profiles)
                 .set(remappedData)
-                .where(eq(profiles.userId, userId))
+                .where(sql`user_id = ${userId}`)
                 .returning();
 
             return updated;

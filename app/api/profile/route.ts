@@ -1,7 +1,7 @@
 import { authenticateRequest } from "@/lib";
 import { storeImage } from "@/lib/cloudinary";
 import { upsertProfile } from "@/lib/db/queries";
-import { ProfileDatabaseRequest } from "@/types/profile";
+import type { ProfileDatabaseRequest } from "@/types/profile";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {

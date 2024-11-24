@@ -1,4 +1,4 @@
-import { ServerResponse } from "./response";
+import type { ServerResponse } from "./response";
 
 export type RegisterServerResponse = ServerResponse;
 

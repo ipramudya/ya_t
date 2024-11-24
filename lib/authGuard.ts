@@ -1,3 +1,5 @@
+"use server";
+
 import { tokenManager } from "@/lib/tokenManager";
 import { verifyToken } from "@/lib/jwt";
 import { redirect } from "next/navigation";

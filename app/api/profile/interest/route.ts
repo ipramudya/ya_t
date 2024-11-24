@@ -1,6 +1,6 @@
 import { authenticateRequest } from "@/lib";
 import { addInterest } from "@/lib/db/queries";
-import { AddProfileInterestPayloadRequest } from "@/types/profile";
+import type { AddProfileInterestPayloadRequest } from "@/types/profile";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {

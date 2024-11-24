@@ -1,7 +1,7 @@
 import { verifyToken } from "@/lib/jwt";
 import { tokenManager } from "@/lib/tokenManager";
 import { redirect } from "next/navigation";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 export default async function Layout({ children }: PropsWithChildren) {
     const tokenization = await tokenManager();
