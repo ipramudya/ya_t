@@ -1,12 +1,13 @@
 "use server";
 
+import { IS_PRODUCTION } from "@/constant";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 
 const TOKEN_COOKIE_NAME = "auth_token";
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
-const SECURE = false;
-const SAME_SITE = "lax";
+const SECURE = IS_PRODUCTION;
+const SAME_SITE = IS_PRODUCTION ? "strict" : "lax";
 const HTTP_ONLY = true;
 
 const COOKIE_OPTIONS: Partial<ResponseCookie> = {
